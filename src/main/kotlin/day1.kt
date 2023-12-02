@@ -1,8 +1,7 @@
 import shared.Input
-import shared.day
 
 fun main() {
-    val input = day(1)
+    val input = Input.day(1)
     println(day1A(input))
     println(day1B(input))
 }
