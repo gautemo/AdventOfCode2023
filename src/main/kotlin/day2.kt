@@ -9,7 +9,7 @@ fun main() {
 fun day2A(input: Input): Int {
     return input.lines.sumOf {
         val game = CubeGame(it)
-        if(game.maxRed <= 12 && game.maxGreen <= 13 && game.maxBlue <= 14) {
+        if (game.maxRed <= 12 && game.maxGreen <= 13 && game.maxBlue <= 14) {
             game.id
         } else {
             0
@@ -17,14 +17,14 @@ fun day2A(input: Input): Int {
     }
 }
 
-fun day2B(input: Input): Int{
+fun day2B(input: Input): Int {
     return input.lines.sumOf {
         val game = CubeGame(it)
         game.maxRed * game.maxGreen * game.maxBlue
     }
 }
 
-class CubeGame(game: String) {
+private class CubeGame(game: String) {
     val id = game.split(':')[0].split(' ')[1].toInt()
     val maxRed = Regex("""(\d+)\sred""").findAll(game).maxOf { m -> m.groupValues[1].toInt() }
     val maxGreen = Regex("""(\d+)\sgreen""").findAll(game).maxOf { m -> m.groupValues[1].toInt() }

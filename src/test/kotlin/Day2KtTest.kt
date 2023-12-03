@@ -13,13 +13,13 @@ class Day2KtTest {
     """.trimIndent())
 
     @Test
-    fun partA() {
+    fun day2A() {
         val result = day2A(input)
         assertEquals(8, result)
     }
 
     @Test
-    fun partB() {
+    fun day2B() {
         val result = day2B(input)
         assertEquals(2286, result)
     }

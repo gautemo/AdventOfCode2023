@@ -8,7 +8,7 @@ fun main() {
 
 fun day1A(input: Input) = calibration(input.lines)
 
-fun day1B(input: Input): Int{
+fun day1B(input: Input): Int {
     return calibration(
         input.lines.map {
             it
@@ -25,7 +25,7 @@ fun day1B(input: Input): Int{
     )
 }
 
-fun calibration(lines: List<String>): Int {
+private fun calibration(lines: List<String>): Int {
     return lines.sumOf { line ->
         val first = line.first { it.isDigit() }
         val last = line.last { it.isDigit() }
