@@ -21,6 +21,6 @@ class Day7KtTest {
     @Test
     fun day7B() {
         val result = day7B(input)
-        assertEquals(5902, result)
+        assertEquals(5905, result)
     }
 }
