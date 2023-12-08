@@ -39,7 +39,7 @@ class Day8KtTest {
 
     @ParameterizedTest
     @MethodSource("inputs")
-    fun day8A(input: Input, expected: Int) {
+    fun day8A(input: Input, expected: Long) {
         val result = day8A(input)
         assertEquals(expected, result)
     }
@@ -58,6 +58,6 @@ class Day8KtTest {
             22Z = (22B, 22B)
             XXX = (XXX, XXX)
         """.trimIndent()))
-        assertEquals(6, result)
+        assertEquals(6L, result)
     }
 }
