@@ -3,6 +3,8 @@ package shared
 // inspired of https://github.com/gautemo/AdventOfCode2021/blob/main/src/main/kotlin/shared/XYMap.kt
 class XYMap<T>(input: Input, toType: (char: Char) -> T?) {
     private val xyMap = mutableMapOf<Point, T>()
+    val width = input.lines[0].length
+    val height = input.lines.size
 
     init {
         for ((y, row) in input.lines.withIndex()) {
@@ -17,6 +19,8 @@ class XYMap<T>(input: Input, toType: (char: Char) -> T?) {
     operator fun get(point: Point): T {
         return xyMap[point] ?: throw Exception("Missing")
     }
+
+    fun getOrNull(point: Point) = xyMap[point]
 
     fun all(predicate: ((value: T) -> Boolean)? = null): Map<Point, T> {
         if (predicate != null) return xyMap.filter { predicate(it.value) }
