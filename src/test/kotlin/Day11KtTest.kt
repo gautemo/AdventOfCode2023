@@ -23,34 +23,20 @@ class Day11KtTest {
     """.trimIndent())
 
     @Test
-    fun expandUniverse() {
-        val result = expandUniverse(input)
-        val expected = """
-            ....#........
-            .........#...
-            #............
-            .............
-            .............
-            ........#....
-            .#...........
-            ............#
-            .............
-            .............
-            .........#...
-            #....#.......
-        """.trimIndent()
-        assertEquals(expected, result)
-    }
-
-    @Test
     fun day11A() {
         val result = day11A(input)
         assertEquals(374, result)
     }
 
-    @Test
-    fun day11B() {
-        val result = day11B(input, 10)
-        assertEquals(1030, result)
+    private fun emptySize() = listOf(
+        Arguments.of(10, 1030),
+        Arguments.of(100, 8410),
+    )
+
+    @ParameterizedTest
+    @MethodSource("emptySize")
+    fun day11B(size: Long, expected: Long) {
+        val result = day11B(input, size)
+        assertEquals(expected, result)
     }
 }
