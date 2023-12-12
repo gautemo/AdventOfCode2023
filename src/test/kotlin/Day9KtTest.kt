@@ -1,13 +1,7 @@
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.TestInstance
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.Arguments
-import org.junit.jupiter.params.provider.MethodSource
-import org.junit.jupiter.params.provider.ValueSource
 import shared.Input
 import kotlin.test.Test
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class Day9KtTest {
     private val input = Input("""
         0 3 6 9 12 15
