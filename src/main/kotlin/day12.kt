@@ -55,7 +55,7 @@ fun springsArrangements(springs: String): Int {
 }
 
 private fun permuteSprings(springs: String): List<String> {
-    if(!verifyStartOfSprings(springs) || !verifyGroups(springs) || !verifyMax(springs)) {
+    if(!verify(springs)) {
         return emptyList()
     }
     if(!springs.contains('?')) {
@@ -70,28 +70,27 @@ private fun verifySprings(springs: String): Boolean {
     return pattern == knownPattern
 }
 
-private fun verifyStartOfSprings(springs: String): Boolean {
+private fun verify(springs: String): Boolean {
+    val pattern = springs.split(' ')[1]
     var start = springs.substringBefore("?")
     while (start.endsWith('#')) {
         start = start.removeSuffix("#")
     }
-    return springs.split(' ')[1].startsWith(getPattern(start))
+    return verifyStartOfSprings(start, pattern) && verifyGroups(springs, pattern) && verifyMax(springs, pattern)
 }
 
-private fun verifyGroups(springs: String): Boolean {
-    val (values, pattern) = springs.split(' ')
-    val canCheck = Regex("""(.*)(?:\.#+\?)""").find(values)?.groups?.get(1)?.value ?: return true
-    val groups = Regex("""#+""")
-        .findAll(canCheck)
-        .map { it.value.length }.toList()
-    val patternInts = pattern.toInts()
-    return groups.size <= patternInts.size
+private fun verifyStartOfSprings(start: String, pattern: String): Boolean {
+    return pattern.startsWith(getPattern(start))
 }
 
-private fun verifyMax(springs: String): Boolean {
-    val (values, pattern) = springs.split(' ')
+private fun verifyGroups(springs: String, pattern: String): Boolean {
+    val minGroupSize = Regex("""#+(\?|#*)*""").findAll(springs).count()
+    return minGroupSize <= pattern.toInts().size
+}
+
+private fun verifyMax(springs: String, pattern: String): Boolean {
     val groups = Regex("""#+""")
-        .findAll(values)
+        .findAll(springs)
         .map { it.value.length }.toList()
     val patternInts = pattern.toInts()
     return groups.max() <= patternInts.max()
