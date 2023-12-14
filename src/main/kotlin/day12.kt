@@ -1,159 +1,72 @@
 import shared.Input
 import shared.toInts
 
-/* WARNING temp not working code */
-
 fun main() {
     val input = Input.day(12)
-    // println(day12A(input))
+    println(day12A(input))
     println(day12B(input))
 }
 
 fun day12A(input: Input): Long {
     return input.lines.sumOf {
-        val (base, basePattern) = it.split(' ')
-        val springs = Springs(base, basePattern)
-        springs.count()
+        countPermutes(it)
     }
 }
 
 fun day12B(input: Input): Long {
-    var count = 1
     return input.lines.sumOf {
-        println("calculating $count of ${input.lines.size}")
-        count++
         val (first, second) = it.split(' ')
-        val firstValue = springsArrangements(it)
-        val secondValue = springsArrangements(List(2) { first }.joinToString("?") + " " + List(2){ second }.joinToString(","))
-        val multiply = secondValue / firstValue
-        var sum = firstValue.toLong()
-        for(i in 1..4) {
-            if(i == 3) {
-                val checkpoint = springsArrangements(List(3) { first }.joinToString("?") + " " + List(3){ second }.joinToString(",")).toLong()
-                if(checkpoint != sum) {
-                    sum = springsArrangements(List(5) { first }.joinToString("?") + " " + List(5){ second }.joinToString(",")).toLong()
-                    break
-                }
-            }
-            sum *= multiply
+        countPermutes("${List(5) { first }.joinToString("?")} ${List(5) { second }.joinToString(",")}")
+    }
+}
+
+private val cache = mutableMapOf<SpringsState, Long>()
+
+fun countPermutes(springs: String): Long {
+    cache.clear()
+    val (values, pattern) = springs.split(' ')
+    return validPermutes(SpringsState(emptyList(), values), pattern.toInts())
+}
+
+private fun validPermutes(springsState: SpringsState, pattern: List<Int>): Long {
+    cache[springsState]?.let { return it }
+    if(!pattern.joinToString(",").startsWith(springsState.groups.joinToString(","))) {
+        return 0
+    }
+    if(springsState.rest.isEmpty()) {
+        if(springsState.groups == pattern) return 1
+        return 0
+    }
+    if(!springsState.rest.contains('?')){
+        val answer = springsState.groups + getGroups(springsState.rest)
+        if(answer == pattern) return 1
+        return 0
+    }
+    val permutes1 = validPermutes(springsState.toNext('.'), pattern)
+    val permutes2 = validPermutes(springsState.toNext('#'), pattern)
+    cache[springsState] = permutes1 + permutes2
+    return permutes1 + permutes2
+}
+
+private data class SpringsState(val groups: List<Int>, val rest: String) {
+    fun toNext(to: Char): SpringsState {
+        val changed = rest.replaceFirst('?', to)
+        if(!changed.contains('?')) {
+            return SpringsState(groups, changed)
         }
-        sum
-    }
-    /*return input.lines.sumOf {
-        val (base, basePattern) = it.split(' ')
-        val springs = Springs(base, basePattern, 5)
-        springs.count()
-    }*/
-}
-// 4195562038729 too low
-
-fun springsArrangements(springs: String): Int {
-    val permutations = permuteSprings(springs)
-    return permutations.count {
-        verifySprings(it)
+        var knownSection = changed.substringBefore("?")
+        while (knownSection.endsWith('#')) {
+            knownSection = knownSection.removeSuffix("#")
+        }
+        val toRest = changed.removePrefix(knownSection)
+        val groupList = getGroups(knownSection)
+        return SpringsState(groups + groupList, toRest)
     }
 }
 
-private fun permuteSprings(springs: String): List<String> {
-    if(!verify(springs)) {
-        return emptyList()
-    }
-    if(!springs.contains('?')) {
-        return listOf(springs)
-    }
-    return permuteSprings(springs.replaceFirst('?', '.')) + permuteSprings(springs.replaceFirst('?', '#'))
-}
-
-private fun verifySprings(springs: String): Boolean {
-    val knownPattern = getPattern(springs)
-    val pattern = springs.split(' ')[1]
-    return pattern == knownPattern
-}
-
-private fun verify(springs: String): Boolean {
-    val pattern = springs.split(' ')[1]
-    var start = springs.substringBefore("?")
-    while (start.endsWith('#')) {
-        start = start.removeSuffix("#")
-    }
-    return verifyStartOfSprings(start, pattern) && verifyGroups(springs, pattern) && verifyMax(springs, pattern)
-}
-
-private fun verifyStartOfSprings(start: String, pattern: String): Boolean {
-    return pattern.startsWith(getPattern(start))
-}
-
-private fun verifyGroups(springs: String, pattern: String): Boolean {
-    val minGroupSize = Regex("""#+(\?|#*)*""").findAll(springs).count()
-    return minGroupSize <= pattern.toInts().size
-}
-
-private fun verifyMax(springs: String, pattern: String): Boolean {
-    val groups = Regex("""#+""")
-        .findAll(springs)
-        .map { it.value.length }.toList()
-    val patternInts = pattern.toInts()
-    return groups.max() <= patternInts.max()
-}
-
-private fun getPattern(springs: String): String {
+private fun getGroups(values: String): List<Int> {
     return Regex("""#+""")
-        .findAll(springs)
-        .map { it.value.length }
-        .joinToString(",")
+        .findAll(values)
+        .map { it.value.length }.toList()
 }
 
-class Springs(base: String, basePattern: String, levels: Int = 1) {
-    val basePermutations = permute(base.removePrefixes('.').removeSuffixes('.'))
-    var permutes = basePermutations
-    val pattern = List(levels) { basePattern }.joinToString(",")
-
-    init {
-        repeat(levels - 1) {
-            permutes = permutes.flatMap { p ->
-                basePermutations.flatMap { bP ->
-                    listOf("$p.$bP", "$p#$bP").filter {
-                        groups(it).size <= pattern.toInts().size &&
-                                groups(it).max() <= pattern.toInts().max()
-                    }
-                }
-            }
-        }
-    }
-
-    private fun permute(values: String): List<String> {
-        if(!values.contains('?')) {
-            return listOf(values)
-        }
-        return permute(values.replaceFirst('?', '.')) + permute(values.replaceFirst('?', '#'))
-    }
-
-    private fun verify(values: String): Boolean {
-        return pattern == groups(values).joinToString(",")
-    }
-
-    private fun groups(values: String): List<Int> {
-        return Regex("""#+""")
-            .findAll(values)
-            .map { it.value.length }
-            .toList()
-    }
-
-    fun count() = permutes.count { verify(it) }.toLong()
-}
-
-fun String.removePrefixes(char: Char): String {
-    var transformed = this
-    while (this.startsWith(char)) {
-        transformed = transformed.removePrefix(char.toString())
-    }
-    return transformed
-}
-
-fun String.removeSuffixes(char: Char): String {
-    var transformed = this
-    while (this.endsWith(char)) {
-        transformed = transformed.removeSuffix(char.toString())
-    }
-    return transformed
-}

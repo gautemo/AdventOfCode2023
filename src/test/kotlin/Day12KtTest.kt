@@ -29,8 +29,8 @@ class Day12KtTest {
 
     @ParameterizedTest
     @MethodSource("springs")
-    fun `test spring arrangement`(input: String, expected: Int) {
-        val result = springsArrangements(input)
+    fun `test spring arrangement`(input: String, expected: Long) {
+        val result = countPermutes(input)
         assertEquals(expected, result)
     }
 
