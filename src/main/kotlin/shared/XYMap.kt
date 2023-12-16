@@ -20,6 +20,10 @@ class XYMap<T>(input: Input, toType: (char: Char) -> T?) {
         return xyMap[point] ?: throw Exception("Missing")
     }
 
+    operator fun set(point: Point, value: T) {
+        xyMap[point] = value
+    }
+
     fun getOrNull(point: Point) = xyMap[point]
 
     fun all(predicate: ((value: T) -> Boolean)? = null): Map<Point, T> {
