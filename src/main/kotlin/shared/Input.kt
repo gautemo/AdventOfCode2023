@@ -2,7 +2,7 @@ package shared
 
 import java.io.File
 
-class Input(private val text: String) {
+class Input(val text: String) {
     val lines: List<String>
         get() = text.lines()
     val chunks: List<String>
