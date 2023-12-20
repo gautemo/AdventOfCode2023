@@ -1,6 +1,4 @@
 import shared.Input
-import shared.Point
-import shared.XYMap
 import shared.toInts
 import kotlin.math.pow
 
