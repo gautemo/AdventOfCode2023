@@ -10,18 +10,24 @@ fun main() {
 
 fun day16A(input: Input): Int {
     val map = XYMap(input) { it }
-    var beams = listOf(BeamState(Point(0, 0), "right"))
+    return tilesEnergized(map, BeamState(Point(0, 0), "right"))
+}
+
+fun day16B(input: Input): Int {
+    val map = XYMap(input) { it }
+    val entries = map.all().filter { it.key.x == 0 }.map { BeamState(it.key, "right") } +
+            map.all().filter { it.key.x == map.width - 1 }.map { BeamState(it.key, "left") } +
+            map.all().filter { it.key.y == 0 }.map { BeamState(it.key, "down") } +
+            map.all().filter { it.key.y == map.height - 1 }.map { BeamState(it.key, "up") }
+    return entries.maxOf {
+        tilesEnergized(map, it)
+    }
+}
+
+private fun tilesEnergized(map: XYMap<Char>, start: BeamState): Int {
+    var beams = listOf(start)
     val history = beams.toMutableList()
     while (beams.isNotEmpty()) {
-        var visual = ""
-        for(y in 0 ..< map.height) {
-            for (x in 0 ..< map.width) {
-                visual += if(history.any { b -> b.point == Point(x,y)  }) "#" else map[Point(x,y)]
-            }
-            visual += "\n"
-        }
-        //println(visual)
-
         val nextBeams = mutableListOf<BeamState>()
         beams.forEach {
             nextBeams.addAll(it.move(map[it.point]))
@@ -30,10 +36,6 @@ fun day16A(input: Input): Int {
         history.addAll(beams)
     }
     return history.map { it.point }.toSet().size
-}
-
-fun day16B(input: Input): Int {
-    return 0
 }
 
 private data class BeamState(val point: Point, val dir: String) {
