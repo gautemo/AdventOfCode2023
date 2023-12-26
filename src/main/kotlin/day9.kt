@@ -18,7 +18,7 @@ fun day9B(input: Input): Long {
     return sequences.sumOf { it.values[0] }
 }
 
-private class Sequence(val values: MutableList<Long>) {
+class Sequence(val values: MutableList<Long>) {
     fun addNextValue() {
         if(values.all { it == 0L }) {
             values.add(0)
